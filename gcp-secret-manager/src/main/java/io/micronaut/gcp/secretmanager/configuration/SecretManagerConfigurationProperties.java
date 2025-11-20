@@ -20,10 +20,12 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.gcp.GoogleCloudConfiguration;
 import jakarta.validation.constraints.Pattern;
+import io.micronaut.gcp.secretmanager.SecretNameAndVersion;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Collections;
 
 /**
  * Configuration for SecretManager clients and config client integration.
@@ -171,5 +173,54 @@ public class SecretManagerConfigurationProperties {
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
+    }
+
+    /**
+     * Parse secret keys of the form.
+     *   - "secret"
+     *   - "secret/2"
+     * @return Set of SecretNameAndVersion
+     */
+    public Set<SecretNameAndVersion> getParsedKeys() {
+        return parseNameAndVersionList(getKeys());
+    }
+
+    /**
+     * Parse config secrets of the form.
+     *   - "appconfig"
+     *   - "appconfig/2"
+     * @return List of SecretNameAndVersion
+     */
+    public Set<SecretNameAndVersion> getParsedCustomConfigs() {
+        return parseNameAndVersionList(getCustomConfigs());
+    }
+
+    private Set<SecretNameAndVersion> parseNameAndVersionList(Set<String> input) {
+        if (input == null || input.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        Set<SecretNameAndVersion> parsed = new HashSet<>(input.size());
+
+        for (String raw : input) {
+            if (raw == null || raw.trim().isEmpty()) {
+                continue;
+            }
+
+            String trimmed = raw.trim();
+            int idx = trimmed.indexOf('/');
+
+            if (idx > 0 && idx < trimmed.length() - 1) {
+                // split: name/version
+                String name = trimmed.substring(0, idx);
+                String version = trimmed.substring(idx + 1);
+                parsed.add(new SecretNameAndVersion(name, version));
+            } else {
+                // no version specified → use latest
+                parsed.add(new SecretNameAndVersion(trimmed, "latest"));
+            }
+        }
+
+        return parsed;
     }
 }

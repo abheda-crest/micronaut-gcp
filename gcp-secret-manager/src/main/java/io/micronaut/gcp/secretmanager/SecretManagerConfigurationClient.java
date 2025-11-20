@@ -76,7 +76,7 @@ public class SecretManagerConfigurationClient implements ConfigurationClient {
 
         return Flux.fromIterable(configCandidates(environment).entrySet())
                 .flatMap(env ->
-                        Mono.from(secretManagerClient.getSecret(env.getValue()))
+                        Mono.from(secretManagerClient.getSecret(env.getValue().name(), env.getValue().version()))
                                 .mapNotNull(secret -> fromSecret(secret, env.getKey()))
                 );
     }
@@ -89,8 +89,8 @@ public class SecretManagerConfigurationClient implements ConfigurationClient {
      * @return
      */
     private Publisher<PropertySource> resolveSecretKeys() {
-        return Flux.fromIterable(configurationProperties.getKeys())
-                .flatMap(secretManagerClient::getSecret)
+        return Flux.fromIterable(configurationProperties.getParsedKeys())
+                .flatMap(sn -> secretManagerClient.getSecret(sn.name(), sn.version()))
                 .filter(Objects::nonNull)
                 .collectMap(versionedSecret -> "sm." + versionedSecret.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
                         versionedSecret -> (Object) new String(versionedSecret.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
@@ -102,28 +102,28 @@ public class SecretManagerConfigurationClient implements ConfigurationClient {
      * @param environment Active application environment
      * @return a map of all possible combinations of files with their position to be queried. For each active environment.
      */
-    private Map<Integer, String> configCandidates(Environment environment) {
-        Map<Integer, String> candidates = new HashMap<>();
+    private Map<Integer, SecretNameAndVersion> configCandidates(Environment environment) {
+        Map<Integer, SecretNameAndVersion> candidates = new HashMap<>();
         int priority = EnvironmentPropertySource.POSITION + 150;
 
         if (configurationProperties.isDefaultConfigEnabled()) {
             String applicationName = environment.getProperty(MICRONAUT_APPLICATION_NAME, String.class).orElse(null);
-            candidates.put(EnvironmentPropertySource.POSITION + 101, APPLICATION);
+            candidates.put(EnvironmentPropertySource.POSITION + 101, new SecretNameAndVersion(APPLICATION, "latest"));
             if (applicationName != null) {
-                candidates.put(EnvironmentPropertySource.POSITION + 102, applicationName);
+                candidates.put(EnvironmentPropertySource.POSITION + 102, new SecretNameAndVersion(applicationName, "latest"));
             }
             for (String e : environment.getActiveNames()) {
-                candidates.put(++priority, APPLICATION + UNDERSCORE + e);
+                candidates.put(++priority, new SecretNameAndVersion(APPLICATION + UNDERSCORE + e, "latest"));
                 if (applicationName != null) {
-                    candidates.put(++priority, applicationName + UNDERSCORE + e);
+                    candidates.put(++priority, new SecretNameAndVersion(applicationName + UNDERSCORE + e, "latest"));
                 }
             }
         }
 
-        for (String name: configurationProperties.getCustomConfigs()) {
+        for (SecretNameAndVersion sn: configurationProperties.getParsedCustomConfigs()) {
             //NOTE: User defined configuration have higher priority than environments
             // with the last one having the highest priority.
-            candidates.put(++priority, name);
+            candidates.put(++priority, sn);
         }
         return candidates;
     }
