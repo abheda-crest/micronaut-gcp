@@ -75,10 +75,12 @@ public class SecretManagerConfigurationClient implements ConfigurationClient {
     private Publisher<PropertySource> resolveEnvironmentSecrets(Environment environment) {
 
         return Flux.fromIterable(configCandidates(environment).entrySet())
-                .flatMap(env ->
-                        Mono.from(secretManagerClient.getSecret(env.getValue()))
-                                .mapNotNull(secret -> fromSecret(secret, env.getKey()))
-                );
+            .flatMap(env -> {
+                    ParsedSecret ps = parseNameAndVersion(env.getValue());
+                    return Mono.from(secretManagerClient.getSecret(ps.name, ps.version))
+                        .mapNotNull(secret -> fromSecret(secret, env.getKey()));
+                }
+            );
     }
 
     /**
@@ -90,11 +92,14 @@ public class SecretManagerConfigurationClient implements ConfigurationClient {
      */
     private Publisher<PropertySource> resolveSecretKeys() {
         return Flux.fromIterable(configurationProperties.getKeys())
-                .flatMap(secretManagerClient::getSecret)
-                .filter(Objects::nonNull)
-                .collectMap(versionedSecret -> "sm." + versionedSecret.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
-                        versionedSecret -> (Object) new String(versionedSecret.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
-                .map(m -> PropertySource.of("secret-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE));
+            .flatMap(secret -> {
+                ParsedSecret ps = parseNameAndVersion(secret);
+                return secretManagerClient.getSecret(ps.name, ps.version);
+            })
+            .filter(Objects::nonNull)
+            .collectMap(versionedSecret -> "sm." + versionedSecret.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
+                versionedSecret -> (Object) new String(versionedSecret.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
+            .map(m -> PropertySource.of("secret-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE));
     }
 
     /**
@@ -156,5 +161,27 @@ public class SecretManagerConfigurationClient implements ConfigurationClient {
     @Override
     public String getDescription() {
         return DESCRIPTION;
+    }
+
+    private record ParsedSecret(String name, String version) {
+    }
+
+    /**
+     * Accepts "secretName" or "secretName/5".
+     * Defaults to version="latest".
+     */
+    private ParsedSecret parseNameAndVersion(String raw) {
+        if (raw == null) {
+            return new ParsedSecret("", "latest");
+        }
+        String trimmed = raw.trim();
+        int idx = trimmed.lastIndexOf('/');
+        if (idx > 0 && idx < trimmed.length() - 1) {
+            return new ParsedSecret(
+                trimmed.substring(0, idx),
+                trimmed.substring(idx + 1)
+            );
+        }
+        return new ParsedSecret(trimmed, "latest");
     }
 }
