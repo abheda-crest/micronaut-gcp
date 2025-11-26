@@ -1,0 +1,9 @@
+plugins {
+    id("io.micronaut.build.internal.gcp-module")
+}
+
+dependencies {
+    api(mn.micronaut.messaging)
+    api(projects.micronautGcpCommon)
+    api(libs.managed.google.cloud.parametermanager)
+}
