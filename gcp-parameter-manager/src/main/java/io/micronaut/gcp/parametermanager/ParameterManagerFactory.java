@@ -25,8 +25,11 @@ import com.google.cloud.parametermanager.v1.ParameterManagerSettings;
 import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.gcp.Modules;
 import io.micronaut.gcp.UserAgentHeaderProvider;
+import io.micronaut.gcp.parametermanager.configuration.ParameterManagerConfigurationProperties;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -43,6 +46,17 @@ import java.io.IOException;
 @BootstrapContextCompatible
 public class ParameterManagerFactory {
 
+    private static final String REGIONAL_ENDPOINT = "parametermanager.%s.rep.googleapis.com:443";
+    private final ParameterManagerConfigurationProperties configurationProperties;
+
+    /**
+     * @param configurationProperties Parameter Manager Configuration Properties
+     */
+    @Inject
+    public ParameterManagerFactory(ParameterManagerConfigurationProperties configurationProperties) {
+        this.configurationProperties = configurationProperties;
+    }
+
     /**
      * Creates a {@link ParameterManagerClient} instance.
      *
@@ -54,6 +68,9 @@ public class ParameterManagerFactory {
     public ParameterManagerClient parameterManagerClient(@Named(Modules.PARAMETER_MANAGER) CredentialsProvider credentialsProvider, @Named(Modules.PARAMETER_MANAGER) TransportChannelProvider transportChannelProvider) {
         try {
             ParameterManagerSettings.Builder builder = ParameterManagerSettings.newBuilder();
+            if (configurationProperties != null && StringUtils.isNotEmpty(configurationProperties.getLocation())) {
+                builder.setEndpoint(String.format(REGIONAL_ENDPOINT, configurationProperties.getLocation()));
+            }
             ParameterManagerSettings settings = builder.setCredentialsProvider(credentialsProvider).setTransportChannelProvider(transportChannelProvider).build();
 
             return ParameterManagerClient.create(settings);

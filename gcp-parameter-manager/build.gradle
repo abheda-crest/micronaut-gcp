@@ -6,4 +6,6 @@ dependencies {
     api(mn.micronaut.messaging)
     api(projects.micronautGcpCommon)
     api(libs.managed.google.cloud.parametermanager)
+
+    implementation(libs.micronaut.discovery.client)
 }
