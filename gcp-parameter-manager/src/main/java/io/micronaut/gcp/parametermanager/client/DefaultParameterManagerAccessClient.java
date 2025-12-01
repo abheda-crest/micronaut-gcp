@@ -60,7 +60,7 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
 
     @Override
     public Mono<VersionedParameter> getParameter(String parameterName, String version) {
-        return getRenderedParameter(parameterName, version, googleCloudConfiguration.getProjectId());
+        return getParameter(parameterName, version, googleCloudConfiguration.getProjectId());
     }
 
     @Override
@@ -136,8 +136,8 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
 
     private VersionedParameter getVersionedParameter(String projectId, String parameterName, String version, ParameterVersion response) {
         return StringUtils.isEmpty(configurationProperties.getLocation())
-            ? new VersionedParameter(projectId, "global", parameterName, version, response.getPayload().toByteArray())
-            : new VersionedParameter(projectId, configurationProperties.getLocation(), parameterName, version, response.getPayload().toByteArray());
+            ? new VersionedParameter(projectId, "global", parameterName, version, response.getPayload().getData().toByteArray())
+            : new VersionedParameter(projectId, configurationProperties.getLocation(), parameterName, version, response.getPayload().getData().toByteArray());
     }
 
     private VersionedParameter getRenderedVersionedParameter(String projectId, String parameterName, String version, RenderParameterVersionResponse response) {
