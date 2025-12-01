@@ -23,6 +23,7 @@ import jakarta.validation.constraints.Pattern;
 
 /**
  * Configuration for ParameterManager clients and config client integration.
+ *
  * @author Alfatah Bheda
  * @since 6.0.0
  */
@@ -90,9 +91,9 @@ public class ParameterManagerConfigurationProperties {
     private static final String JOHANNESBURG = "africa-south1";
 
     @Pattern(regexp = TAIWAN + "|" + HONG_KONG + "|" + TOKYO + "|" + OSAKA + "|" + SEOUL + "|" + MUMBAI + "|" + DELHI + "|" + SINGAPORE + "|" + JAKARTA + "|" + SYDNEY + "|" + MELBOURNE
-            + "|" + WARSAW + "|" + FINLAND + "|" + STOCKHOLM + "|" + MADRID + "|" + BELGIUM + "|" + BERLIN + "|" + TURIN + "|" + LONDON + "|" + FRANKFURT + "|" + NETHERLANDS + "|" + ZURICH + "|" + MILAN + "|" + PARIS
-            + "|" + MONTREAL + "|" + TORONTO + "|" + MEXICO + "|" + IOWA + "|" + SOUTH_CAROLINA + "|" + NORTHERN_VIRGINIA + "|" + COLUMBUS + "|" + DALLAS + "|" + OREGON + "|" + LOS_ANGELES + "|" + SALT_LAKE_CITY + "|" + LAS_VEGAS
-            + "|" + SAO_PAULO + "|" + SANTIAGO + "|" + DOHA + "|" + DAMMAM + "|" + TEL_AVIV + "|" + JOHANNESBURG)
+        + "|" + WARSAW + "|" + FINLAND + "|" + STOCKHOLM + "|" + MADRID + "|" + BELGIUM + "|" + BERLIN + "|" + TURIN + "|" + LONDON + "|" + FRANKFURT + "|" + NETHERLANDS + "|" + ZURICH + "|" + MILAN + "|" + PARIS
+        + "|" + MONTREAL + "|" + TORONTO + "|" + MEXICO + "|" + IOWA + "|" + SOUTH_CAROLINA + "|" + NORTHERN_VIRGINIA + "|" + COLUMBUS + "|" + DALLAS + "|" + OREGON + "|" + LOS_ANGELES + "|" + SALT_LAKE_CITY + "|" + LAS_VEGAS
+        + "|" + SAO_PAULO + "|" + SANTIAGO + "|" + DOHA + "|" + DAMMAM + "|" + TEL_AVIV + "|" + JOHANNESBURG)
     @Nullable
     private String location;
 
@@ -101,6 +102,7 @@ public class ParameterManagerConfigurationProperties {
      * If not provided, the client will be created using the global endpoint.
      * It must be one of the available location for the regional endpoints.
      * See <a href="https://docs.cloud.google.com/secret-manager/docs/locations#parameter_manager_locations">Parameter Manager locations</a> for more information.
+     *
      * @return Location of the regional parameters
      */
     @Nullable

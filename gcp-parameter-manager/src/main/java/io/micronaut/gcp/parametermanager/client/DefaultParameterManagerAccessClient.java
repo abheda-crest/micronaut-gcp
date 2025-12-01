@@ -115,29 +115,29 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
         RenderParameterVersionRequest request = RenderParameterVersionRequest.newBuilder().setName(parameterVersionName.toString()).build();
 
         final Mono<RenderParameterVersionResponse> mono = Mono.create((sink) -> {
-           final ApiFuture<RenderParameterVersionResponse> future = client.renderParameterVersionCallable().futureCall(request);
-           future.addListener(() -> {
-               try {
-                   final RenderParameterVersionResponse result = future.get();
-                   sink.success(result);
-               } catch (Throwable e) {
-                   sink.error(e);
-               }
-           }, executorService);
+            final ApiFuture<RenderParameterVersionResponse> future = client.renderParameterVersionCallable().futureCall(request);
+            future.addListener(() -> {
+                try {
+                    final RenderParameterVersionResponse result = future.get();
+                    sink.success(result);
+                } catch (Throwable e) {
+                    sink.error(e);
+                }
+            }, executorService);
         });
 
         return mono
-                .map(response -> getRenderedVersionedParameter(projectId, parameterName, version, response))
-                .onErrorResume(e -> {
-                    LOG.warn("Error while rendering the Parameter {}: {}", parameterVersionName, e.getMessage());
-                    return Mono.empty();
-                });
+            .map(response -> getRenderedVersionedParameter(projectId, parameterName, version, response))
+            .onErrorResume(e -> {
+                LOG.warn("Error while rendering the Parameter {}: {}", parameterVersionName, e.getMessage());
+                return Mono.empty();
+            });
     }
 
     private ParameterVersionName getParameterVersionName(String projectId, String parameterName, String version) {
         return StringUtils.isEmpty(configurationProperties.getLocation())
-                ? ParameterVersionName.of(projectId, "global", parameterName, version)
-                : ParameterVersionName.of(projectId, configurationProperties.getLocation(), parameterName, version);
+            ? ParameterVersionName.of(projectId, "global", parameterName, version)
+            : ParameterVersionName.of(projectId, configurationProperties.getLocation(), parameterName, version);
     }
 
     private VersionedParameter getVersionedParameter(String projectId, String parameterName, String version, ParameterVersion response) {
@@ -148,7 +148,7 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
 
     private VersionedParameter getRenderedVersionedParameter(String projectId, String parameterName, String version, RenderParameterVersionResponse response) {
         return StringUtils.isEmpty(configurationProperties.getLocation())
-                ? new VersionedParameter(projectId, "global", parameterName, version, response.getRenderedPayload().toByteArray())
-                : new VersionedParameter(projectId, configurationProperties.getLocation(), parameterName, version, response.getRenderedPayload().toByteArray());
+            ? new VersionedParameter(projectId, "global", parameterName, version, response.getRenderedPayload().toByteArray())
+            : new VersionedParameter(projectId, configurationProperties.getLocation(), parameterName, version, response.getRenderedPayload().toByteArray());
     }
 }

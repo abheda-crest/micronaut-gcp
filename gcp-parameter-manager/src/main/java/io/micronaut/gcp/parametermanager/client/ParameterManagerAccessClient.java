@@ -29,8 +29,9 @@ public interface ParameterManagerAccessClient {
 
     /**
      * Fetches a parameter from the Parameter Manager using the `gcp.projectId` project.
+     *
      * @param parameterName - name of the parameter
-     * @param version - version of the parameter
+     * @param version       - version of the parameter
      * @return String value of the parameter or empty
      */
     @SingleResult
@@ -38,9 +39,10 @@ public interface ParameterManagerAccessClient {
 
     /**
      * Fetches a parameter from the Parameter Manager.
+     *
      * @param parameterName - name of the parameter
-     * @param version - version of the parameter
-     * @param projectId - project identifier
+     * @param version       - version of the parameter
+     * @param projectId     - project identifier
      * @return String value of the parameter or empty
      */
     @SingleResult
@@ -48,8 +50,9 @@ public interface ParameterManagerAccessClient {
 
     /**
      * Renders a parameter from the Parameter Manager using the `gcp.projectId` project.
+     *
      * @param parameterName - name of the parameter
-     * @param version - version of the parameter
+     * @param version       - version of the parameter
      * @return String value of the parameter or empty
      */
     @SingleResult
@@ -57,9 +60,10 @@ public interface ParameterManagerAccessClient {
 
     /**
      * Renders a parameter from the Parameter Manager.
+     *
      * @param parameterName - name of the parameter
-     * @param version - version of the parameter
-     * @param projectId - project identifier
+     * @param version       - version of the parameter
+     * @param projectId     - project identifier
      * @return String value of the parameter or empty
      */
     @SingleResult
