@@ -90,7 +90,10 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
 
         return mono
             .map(response -> getVersionedParameter(projectId, parameterName, version, response))
-            .onErrorResume(throwable -> Mono.empty());
+            .onErrorResume(e -> {
+                LOG.warn("Error while fetching the Parameter {}: {}", parameterVersionName, e.getMessage());
+                return Mono.empty();
+            });
     }
 
     @Override
@@ -125,7 +128,10 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
 
         return mono
                 .map(response -> getRenderedVersionedParameter(projectId, parameterName, version, response))
-                .onErrorResume(throwable -> Mono.empty());
+                .onErrorResume(e -> {
+                    LOG.warn("Error while rendering the Parameter {}: {}", parameterVersionName, e.getMessage());
+                    return Mono.empty();
+                });
     }
 
     private ParameterVersionName getParameterVersionName(String projectId, String parameterName, String version) {
