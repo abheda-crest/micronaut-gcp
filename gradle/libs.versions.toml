@@ -1,8 +1,5 @@
 [versions]
-micronaut-docs = "3.0.0"
-micronaut = "4.10.8"
-groovy = "4.0.25"
-spock = "2.3-groovy-4.0"
+micronaut = "5.0.0-M2"
 managed-google-auth-library-oauth2http = "1.39.1"
 managed-google-functions-framework-api = "1.1.4"
 managed-google-function-invoker = "1.4.1"
@@ -16,7 +13,6 @@ managed-gax = "2.70.3"
 brave-opentracing = "1.0.1"
 brave-propagation-stackdriver = "2.3.0"
 
-kotlin = '1.9.25'
 cloudevents-api = "2.5.0"
 
 logback-json-classic = "0.1.5"
@@ -26,20 +22,19 @@ system-stubs-core = "2.1.8"
 awaitility = '4.3.0'
 
 micronaut-grpc = "4.12.0"
-micronaut-jackson-xml = "4.7.0"
+micronaut-jackson-xml = "4.8.0"
 micronaut-logging = "1.7.1"
-micronaut-reactor = "3.8.0"
-micronaut-rxjava3 = "3.8.0"
-micronaut-serde = "2.15.3"
-micronaut-servlet = "5.5.1"
-micronaut-tracing = "7.1.4"
-micronaut-test = "4.7.0"
+micronaut-reactor = "4.0.0-M1"
+micronaut-rxjava3 = "4.0.0-M1"
+micronaut-serde = "3.0.0-M1"
+micronaut-servlet = "6.0.0-M1"
+micronaut-tracing = "7.2.0"
 micronaut-test-resources = "2.10.1"
 micronaut-discovery = "4.7.1"
-micronaut-validation = "4.10.0"
+micronaut-validation = "5.0.0-M1"
 
 # Micronaut
-micronaut-gradle-plugin = "4.5.5"
+micronaut-gradle-plugin = "4.6.1"
 
 [libraries]
 # Core
@@ -79,8 +74,6 @@ google-auth-library-credentials = { module = "com.google.auth:google-auth-librar
 
 grpc-auth = { module = "io.grpc:grpc-auth" }
 grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded" }
-kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 logback-json-classic = { module = "ch.qos.logback.contrib:logback-json-classic", version.ref = "logback-json-classic" }
 zipkin-sender-stackdriver = { module = "io.zipkin.gcp:zipkin-sender-stackdriver", version.ref = "zipkin-sender-stackdriver" }
 awaitility = { module = 'org.awaitility:awaitility', version.ref = 'awaitility' }
@@ -88,7 +81,3 @@ system-stubs-core = { module = "uk.org.webcompere:system-stubs-core", version.re
 
 # Plugins
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
-kotlin-gradle-plugin = { module = 'org.jetbrains.kotlin:kotlin-gradle-plugin', version.ref = 'kotlin' }
-kotlin-gradle-allopen = { module = 'org.jetbrains.kotlin:kotlin-allopen', version.ref = 'kotlin' }
-junit-jupiter-engine = { module = 'org.junit.jupiter:junit-jupiter-engine' }
-junit-platform-engine = { module = "org.junit.platform:junit-platform-suite-engine" }
