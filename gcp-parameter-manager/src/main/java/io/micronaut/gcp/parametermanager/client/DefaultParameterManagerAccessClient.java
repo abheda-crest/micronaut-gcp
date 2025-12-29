@@ -19,7 +19,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.parametermanager.v1.*;
 import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.gcp.GoogleCloudConfiguration;
 import io.micronaut.gcp.parametermanager.configuration.ParameterManagerConfigurationProperties;
