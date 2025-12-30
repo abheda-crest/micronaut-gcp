@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Default implementation of {@link ParameterManagerAccessClient}.
@@ -54,7 +55,7 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
     public DefaultParameterManagerAccessClient(ParameterManagerClient client, GoogleCloudConfiguration googleCloudConfiguration, @Nullable @Named(TaskExecutors.BLOCKING) ExecutorService executorService, ParameterManagerConfigurationProperties configurationProperties) {
         this.client = client;
         this.googleCloudConfiguration = googleCloudConfiguration;
-        this.executorService = executorService;
+        this.executorService = executorService != null ? executorService : Executors.newSingleThreadExecutor();
         this.configurationProperties = configurationProperties;
     }
 

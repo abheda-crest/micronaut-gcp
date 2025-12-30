@@ -21,6 +21,10 @@ import org.jspecify.annotations.Nullable;
 import io.micronaut.gcp.GoogleCloudConfiguration;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * Configuration for ParameterManager clients and config client integration.
  *
@@ -97,6 +101,9 @@ public class ParameterManagerConfigurationProperties {
     @Nullable
     private String location;
 
+    private Set<String> customConfigs = new LinkedHashSet<>();
+    private Set<String> keys = new HashSet<>();
+
     /**
      * Specifies the location of the regional parameters used to create a {@link com.google.cloud.parametermanager.v1.ParameterManagerClient} specific to the location endpoint.
      * If not provided, the client will be created using the global endpoint.
@@ -115,5 +122,37 @@ public class ParameterManagerConfigurationProperties {
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
+    }
+
+    /**
+     *
+     * @return Set of custom config files to be included as property sources.
+     */
+    public Set<String> getCustomConfigs() {
+        return customConfigs;
+    }
+
+    /**
+     *
+     * @param customConfigs configs to be set
+     */
+    public void setCustomConfigs(Set<String> customConfigs) {
+        this.customConfigs = customConfigs;
+    }
+
+    /**
+     *
+     * @return Set of parameters to be loaded as property sources.
+     */
+    public Set<String> getKeys() {
+        return keys;
+    }
+
+    /**
+     *
+     * @param keys keys to be set
+     */
+    public void setKeys(Set<String> keys) {
+        this.keys = keys;
     }
 }
