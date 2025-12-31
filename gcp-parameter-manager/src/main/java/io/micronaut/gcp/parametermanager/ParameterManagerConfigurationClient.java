@@ -29,6 +29,7 @@ import io.micronaut.context.env.EnvironmentPropertySource;
 import io.micronaut.context.env.PropertySource;
 import io.micronaut.context.env.PropertySourceLoader;
 import io.micronaut.context.env.PropertySourceReader;
+import io.micronaut.context.exceptions.ConfigurationException;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.discovery.config.ConfigurationClient;
 import io.micronaut.gcp.parametermanager.client.ParameterManagerAccessClient;
@@ -121,21 +122,44 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         return PropertySource.of(parameter.getName() + PROPERTY_SOURCE_SUFFIX, data, priority);
     }
 
-    private record ParsedParameter(String name, String version) {
-    }
-
     /**
-     * Accepts "parameter_name/parameter_version".
+     * Accepts input strictly in the format.
+     *   parameter_name/parameter_version
+     * Examples:
+     *   "my-param/1"
+     *   "my-param/latest"
      */
     private ParsedParameter parseNameAndVersion(String raw) {
         String trimmed = raw.trim();
+        if (trimmed.isEmpty()) {
+            throw new ConfigurationException("Parameter reference must not be empty");
+        }
+
         int idx = trimmed.lastIndexOf('/');
-        if (idx > 0 && idx < trimmed.length() - 1) {
-            return new ParsedParameter(
-                trimmed.substring(0, idx),
-                trimmed.substring(idx + 1)
+
+        if (idx < 0) {
+            throw new ConfigurationException(
+                "Invalid parameter format. Expected 'parameter_name/parameter_version' but got: " + raw
             );
         }
-        return new ParsedParameter(trimmed, "");
+
+        String name = trimmed.substring(0, idx);
+        String version = trimmed.substring(idx + 1);
+
+        if (name.isBlank()) {
+            throw new ConfigurationException("Parameter name must not be empty: " + raw);
+        }
+        if (name.contains("/")) {
+            throw new ConfigurationException("Parameter name must not contain '/': " + raw);
+        }
+
+        if (version.isBlank()) {
+            throw new ConfigurationException("Parameter version must not be empty: " + raw);
+        }
+
+        return new ParsedParameter(name, version);
+    }
+
+    private record ParsedParameter(String name, String version) {
     }
 }
