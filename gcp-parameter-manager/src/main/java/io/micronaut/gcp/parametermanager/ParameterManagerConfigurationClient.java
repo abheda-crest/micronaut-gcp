@@ -94,7 +94,7 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
                 .filter(Objects::nonNull)
                 .collectMap(versionedParameter -> "pm." + versionedParameter.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
                     versionedParameter -> (Object) new String(versionedParameter.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
-                .map(m -> PropertySource.of("parameter-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE));
+                .map(m -> PropertySource.of("parameter-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE, PropertySource.Origin.of("GCP Parameter Manager")));
     }
 
     private Map<Integer, String> configCandidates() {
