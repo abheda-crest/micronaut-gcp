@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2025 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,18 +135,44 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
             });
     }
 
+    /**
+     * Helper method to construct a {@link com.google.cloud.parametermanager.v1.ParameterVersionName}.
+     *
+     * @param projectId     - The GCP project ID.
+     * @param parameterName - The name of the parameter.
+     * @param version       - The version of the parameter.
+     * @return The {@link ParameterVersionName} for the given inputs.
+     */
     private ParameterVersionName getParameterVersionName(String projectId, String parameterName, String version) {
         return StringUtils.isEmpty(configurationProperties.getLocation())
             ? ParameterVersionName.of(projectId, "global", parameterName, version)
             : ParameterVersionName.of(projectId, configurationProperties.getLocation(), parameterName, version);
     }
 
+    /**
+     * Helper method to convert {@link com.google.cloud.parametermanager.v1.ParameterVersion} into a {@link VersionedParameter}.
+     *
+     * @param projectId     - The GCP project ID.
+     * @param parameterName - The name of the parameter.
+     * @param version       - The version of the parameter.
+     * @param response      - The {@link com.google.cloud.parametermanager.v1.ParameterVersion} containing parameter data.
+     * @return A {@link VersionedParameter} object containing the parameter value.
+     */
     private VersionedParameter getVersionedParameter(String projectId, String parameterName, String version, ParameterVersion response) {
         return StringUtils.isEmpty(configurationProperties.getLocation())
             ? new VersionedParameter(projectId, "global", parameterName, version, response.getPayload().getData().toByteArray())
             : new VersionedParameter(projectId, configurationProperties.getLocation(), parameterName, version, response.getPayload().getData().toByteArray());
     }
 
+    /**
+     * Helper method to convert {@link com.google.cloud.parametermanager.v1.RenderParameterVersionResponse} into a {@link VersionedParameter}.
+     *
+     * @param projectId     - The GCP project ID.
+     * @param parameterName - The name of the parameter.
+     * @param version       - The version of the parameter.
+     * @param response      - The {@link com.google.cloud.parametermanager.v1.RenderParameterVersionResponse} containing rendered parameter data.
+     * @return A {@link VersionedParameter} object containing the parameter value.
+     */
     private VersionedParameter getRenderedVersionedParameter(String projectId, String parameterName, String version, RenderParameterVersionResponse response) {
         return StringUtils.isEmpty(configurationProperties.getLocation())
             ? new VersionedParameter(projectId, "global", parameterName, version, response.getRenderedPayload().toByteArray())

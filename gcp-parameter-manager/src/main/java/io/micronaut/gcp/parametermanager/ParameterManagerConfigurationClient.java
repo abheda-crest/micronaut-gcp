@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2025 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,17 +63,33 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         this.parameterManagerConfigurationProperties = parameterManagerConfigurationProperties;
     }
 
+    /**
+     * Returns a description of this configuration client.
+     *
+     * @return description string.
+     */
     @Override
     public String getDescription() {
         return DESCRIPTION;
     }
 
+    /**
+     * Resolves property sources for a given environment asynchronously.
+     *
+     * @param environment - The Micronaut environment.
+     * @return list of resolved property sources.
+     */
     @Override
     public Publisher<PropertySource> getPropertySources(Environment environment) {
         readers = environment.getPropertySourceLoaders().stream().toList();
         return Flux.concat(resolveParameterConfigs(), resolveParameterKeys());
     }
 
+    /**
+     * Resolves configurations from Parameter Manager into a reactive stream of {@link PropertySource}.
+     *
+     * @return Flux of property sources.
+     */
     private Publisher<PropertySource> resolveParameterConfigs() {
         return Flux.fromIterable(configCandidates().entrySet())
             .flatMap(env -> {
@@ -84,6 +100,14 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         );
     }
 
+    /**
+     * Resolves the keys from Parameter Manager into a single "parameter-manager-keys" PropertySource.
+     * Keys are all converted to snake case prior to insertion to allow the following mapping to happen:
+     * DB_PASSWORD -> db.password
+     * dbPassword -> (DB_PASSWORD) -> db.password
+     *
+     * @return Flux of property sources.
+     */
     private Publisher<PropertySource> resolveParameterKeys() {
         return Flux.fromIterable(parameterManagerConfigurationProperties.getKeys())
                 .flatMap(parameter -> {
@@ -96,6 +120,10 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
                 .map(m -> PropertySource.of("parameter-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE, PropertySource.Origin.of("GCP Parameter Manager")));
     }
 
+    /**
+     * Gather custom configurations stored in the Parameter Manager.
+     * @return a map of all possible candidate configurations.
+     */
     private Map<Integer, String> configCandidates() {
         Map<Integer, String> candidates = new HashMap<>();
         int priority = EnvironmentPropertySource.POSITION + 150;
@@ -106,6 +134,15 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         return candidates;
     }
 
+    /**
+     * Converts a {@link VersionedParameter} into a Micronaut {@link PropertySource}.
+     * This method loops through the provided readers, and the first that can read the file (when a wrong file type is read an exception is swallowed)
+     * returns a Property Source based on the Map of the parsed file.
+     *
+     * @param parameter - The {@link VersionedParameter} fetched from GCP Parameter Manager to be parsed.
+     * @param priority  - The priority to assign to the resulting {@link PropertySource}
+     * @return Mapped PropertySource.
+     */
     private PropertySource fromParameter(VersionedParameter parameter, int priority) {
         Map<String, Object> data = new HashMap<>();
 
@@ -122,11 +159,14 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     }
 
     /**
-     * Accepts input strictly in the format.
-     *   parameter_name/parameter_version
+     * Parses a parameter string in the form "parameter_name/parameter_version" into a {@link ParsedParameter} object.
      * Examples:
-     *   "my-param/1"
-     *   "my-param/latest"
+     *  "my-param/1"    -> name="my-param", version="1"
+     *  "my-param/ver1" -> name="my-param", version="ver1"
+     *
+     * @param raw - the raw string for the parameter name containing version.
+     * @return a {@link ParsedParameter} object containing name and version
+     * @throws ConfigurationException if the input is invalid or empty
      */
     private ParsedParameter parseNameAndVersion(String raw) {
         String trimmed = raw.trim();
@@ -159,6 +199,9 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         return new ParsedParameter(name, version);
     }
 
+    /**
+     * Private record class to hold the parsed parameter name and version.
+     */
     private record ParsedParameter(String name, String version) {
     }
 }

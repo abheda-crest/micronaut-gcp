@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2025 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ public class ParameterManagerConfigurationProperties {
      * It must be one of the available location for the regional endpoints.
      * See <a href="https://docs.cloud.google.com/secret-manager/docs/locations#parameter_manager_locations">Parameter Manager locations</a> for more information.
      *
-     * @return Location of the regional parameters
+     * @return Location of the regional parameters.
      */
     @Nullable
     public String getLocation() {
@@ -118,7 +118,7 @@ public class ParameterManagerConfigurationProperties {
     }
 
     /**
-     * @param location Sets the location of the regional parameters
+     * @param location - Sets the location of the regional parameters.
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
@@ -134,7 +134,7 @@ public class ParameterManagerConfigurationProperties {
 
     /**
      *
-     * @param customConfigs configs to be set
+     * @param customConfigs - configs to be set.
      */
     public void setCustomConfigs(Set<String> customConfigs) {
         this.customConfigs = customConfigs;
@@ -150,7 +150,7 @@ public class ParameterManagerConfigurationProperties {
 
     /**
      *
-     * @param keys keys to be set
+     * @param keys - keys to be set.
      */
     public void setKeys(Set<String> keys) {
         this.keys = keys;
