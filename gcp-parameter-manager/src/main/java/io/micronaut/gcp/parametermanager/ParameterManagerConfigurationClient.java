@@ -15,12 +15,6 @@
  */
 package io.micronaut.gcp.parametermanager;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
@@ -38,6 +32,12 @@ import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Distributed configuration client implementation that fetches application configuration files from Google Cloud Parameter Manager.
@@ -99,11 +99,11 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     private Publisher<PropertySource> resolveParameterConfigs() {
         return Flux.fromIterable(configCandidates().entrySet())
             .flatMap(env -> {
-                ParsedParameter parsedParameter = parseNameAndVersion(env.getValue());
-                return Mono.from(parameterManagerAccessClient.getRenderedParameter(parsedParameter.name, parsedParameter.version))
-                    .mapNotNull(parameter -> fromParameter(parameter, env.getKey()));
-            }
-        );
+                    ParsedParameter parsedParameter = parseNameAndVersion(env.getValue());
+                    return Mono.from(parameterManagerAccessClient.getRenderedParameter(parsedParameter.name, parsedParameter.version))
+                        .mapNotNull(parameter -> fromParameter(parameter, env.getKey()));
+                }
+            );
     }
 
     /**
@@ -116,25 +116,26 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
      */
     private Publisher<PropertySource> resolveParameterKeys() {
         return Flux.fromIterable(parameterManagerConfigurationProperties.getKeys())
-                .flatMap(parameter -> {
+            .flatMap(parameter -> {
                 ParsedParameter parsedParameter = parseNameAndVersion(parameter);
                 return parameterManagerAccessClient.getRenderedParameter(parsedParameter.name, parsedParameter.version);
             })
-                .filter(Objects::nonNull)
-                .collectMap(versionedParameter -> "pm." + versionedParameter.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
-                    versionedParameter -> (Object) new String(versionedParameter.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
-                .map(m -> PropertySource.of("parameter-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE, PropertySource.Origin.of("GCP Parameter Manager")));
+            .filter(Objects::nonNull)
+            .collectMap(versionedParameter -> "pm." + versionedParameter.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
+                versionedParameter -> (Object) new String(versionedParameter.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
+            .map(m -> PropertySource.of("parameter-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE, PropertySource.Origin.of("GCP Parameter Manager")));
     }
 
     /**
      * Gather custom configurations stored in the Parameter Manager.
+     *
      * @return a map of all possible candidate configurations.
      */
     private Map<Integer, String> configCandidates() {
         Map<Integer, String> candidates = new HashMap<>();
         int priority = EnvironmentPropertySource.POSITION + 150;
 
-        for (String name: parameterManagerConfigurationProperties.getCustomConfigs()) {
+        for (String name : parameterManagerConfigurationProperties.getCustomConfigs()) {
             candidates.put(++priority, name);
         }
         return candidates;
@@ -167,8 +168,8 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     /**
      * Parses a parameter string in the form "parameter_name/parameter_version" into a {@link ParsedParameter} object.
      * Examples:
-     *  "my-param/1"    -> name="my-param", version="1"
-     *  "my-param/ver1" -> name="my-param", version="ver1"
+     * "my-param/1"    -> name="my-param", version="1"
+     * "my-param/ver1" -> name="my-param", version="ver1"
      *
      * @param raw - the raw string for the parameter name containing version.
      * @return a {@link ParsedParameter} object containing name and version

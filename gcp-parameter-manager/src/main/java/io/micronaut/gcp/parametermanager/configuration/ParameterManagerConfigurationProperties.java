@@ -17,9 +17,9 @@ package io.micronaut.gcp.parametermanager.configuration;
 
 import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.ConfigurationProperties;
-import org.jspecify.annotations.Nullable;
 import io.micronaut.gcp.GoogleCloudConfiguration;
 import jakarta.validation.constraints.Pattern;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
