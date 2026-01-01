@@ -9,4 +9,7 @@ dependencies {
 
     implementation(libs.micronaut.discovery.client)
     implementation(mn.reactor)
+    implementation(mn.snakeyaml)
+
+    testImplementation(mn.snakeyaml)
 }

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ServiceLoader;
 
 import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Requires;
@@ -55,8 +54,7 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     private static final String CAMEL_CASE_REPLACE = "$1_$2";
     private static final String DESCRIPTION = "GCP Parameter Manager Config Client";
     private static final String PROPERTY_SOURCE_SUFFIX = " (GCP ParameterManager)";
-    private static final List<PropertySourceLoader> READERS = ServiceLoader.load(PropertySourceLoader.class)
-            .stream().map(ServiceLoader.Provider::get).toList();
+    private static List<PropertySourceLoader> readers;
     private final ParameterManagerAccessClient parameterManagerAccessClient;
     private final ParameterManagerConfigurationProperties parameterManagerConfigurationProperties;
 
@@ -72,6 +70,7 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
 
     @Override
     public Publisher<PropertySource> getPropertySources(Environment environment) {
+        readers = environment.getPropertySourceLoaders().stream().toList();
         return Flux.concat(resolveParameterConfigs(), resolveParameterKeys());
     }
 
@@ -110,7 +109,7 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     private PropertySource fromParameter(VersionedParameter parameter, int priority) {
         Map<String, Object> data = new HashMap<>();
 
-        for (PropertySourceReader reader : READERS) {
+        for (PropertySourceReader reader : readers) {
             try {
                 data.putAll(reader.read(parameter.getName(), parameter.getContents()));
                 if (!data.isEmpty()) {
