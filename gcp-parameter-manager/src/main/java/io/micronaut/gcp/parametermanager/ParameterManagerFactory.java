@@ -50,6 +50,8 @@ public class ParameterManagerFactory {
     private final ParameterManagerConfigurationProperties configurationProperties;
 
     /**
+     * Constructor for the {@link ParameterManagerFactory}.
+     *
      * @param configurationProperties Parameter Manager Configuration Properties
      */
     @Inject
@@ -92,6 +94,8 @@ public class ParameterManagerFactory {
     }
 
     /**
+     * Returns the default {@link TransportChannelProvider}.
+     *
      * @return default {@link TransportChannelProvider} TransportChannelProvider
      */
     @Singleton

@@ -30,6 +30,15 @@ public class VersionedParameter {
     private final String version;
     private final byte[] contents;
 
+    /**
+     * Constructor for the {@link VersionedParameter}.
+     *
+     * @param projectId - The GCP project ID of the parameter.
+     * @param location  - The location of the parameter.
+     * @param name      - The name of the parameter.
+     * @param version   - The version of the parameter.
+     * @param contents  - The content of the specific parameter version.
+     */
     public VersionedParameter(String projectId, String location, String name, String version, byte[] contents) {
         this.projectId = projectId;
         this.location = location;
@@ -39,6 +48,7 @@ public class VersionedParameter {
     }
 
     /**
+     * Returns the GCP project ID of the Parameter.
      *
      * @return projectId
      */
@@ -47,6 +57,7 @@ public class VersionedParameter {
     }
 
     /**
+     * Returns the location of the Parameter.
      *
      * @return location
      */
@@ -55,6 +66,7 @@ public class VersionedParameter {
     }
 
     /**
+     * Returns the name of the Parameter.
      *
      * @return name
      */
@@ -63,6 +75,7 @@ public class VersionedParameter {
     }
 
     /**
+     * Returns the version of the Parameter.
      *
      * @return version
      */
@@ -71,6 +84,7 @@ public class VersionedParameter {
     }
 
     /**
+     * Returns the content of the specific Parameter version.
      *
      * @return contents
      */

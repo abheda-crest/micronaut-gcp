@@ -51,6 +51,14 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
     private final ExecutorService executorService;
     private final ParameterManagerConfigurationProperties configurationProperties;
 
+    /**
+     * Constructor for the {@link DefaultParameterManagerAccessClient}.
+     *
+     * @param client                   - The client for the GCP Parameter Manager.
+     * @param googleCloudConfiguration - The Google Cloud Configuration.
+     * @param executorService          - optional {@link ExecutorService} for executing blocking tasks; may be null.
+     * @param configurationProperties  - The Configuration for Parameter Manager client.
+     */
     @Inject
     public DefaultParameterManagerAccessClient(ParameterManagerClient client, GoogleCloudConfiguration googleCloudConfiguration, @Nullable @Named(TaskExecutors.BLOCKING) ExecutorService executorService, ParameterManagerConfigurationProperties configurationProperties) {
         this.client = client;

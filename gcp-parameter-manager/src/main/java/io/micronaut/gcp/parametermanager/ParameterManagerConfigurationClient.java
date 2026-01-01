@@ -58,6 +58,12 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     private final ParameterManagerAccessClient parameterManagerAccessClient;
     private final ParameterManagerConfigurationProperties parameterManagerConfigurationProperties;
 
+    /**
+     * Constructor for the {@link ParameterManagerConfigurationClient}.
+     *
+     * @param parameterManagerAccessClient            - The wrapper client {@link ParameterManagerAccessClient} to communicate with GCP Parameter Manager.
+     * @param parameterManagerConfigurationProperties - The Configuration for Parameter Manager client.
+     */
     public ParameterManagerConfigurationClient(ParameterManagerAccessClient parameterManagerAccessClient, ParameterManagerConfigurationProperties parameterManagerConfigurationProperties) {
         this.parameterManagerAccessClient = parameterManagerAccessClient;
         this.parameterManagerConfigurationProperties = parameterManagerConfigurationProperties;
@@ -201,6 +207,9 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
 
     /**
      * Private record class to hold the parsed parameter name and version.
+     *
+     * @param name    - The name of the Parameter.
+     * @param version - The version of the Parameter.
      */
     private record ParsedParameter(String name, String version) {
     }

@@ -118,13 +118,16 @@ public class ParameterManagerConfigurationProperties {
     }
 
     /**
-     * @param location - Sets the location of the regional parameters.
+     * Sets the location of the regional parameters.
+     *
+     * @param location - Location of the regional parameters.
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
     }
 
     /**
+     * Specifies the custom config files to be included as property sources.
      *
      * @return Set of custom config files to be included as property sources.
      */
@@ -133,6 +136,7 @@ public class ParameterManagerConfigurationProperties {
     }
 
     /**
+     * Sets the custom config files to be included as property sources.
      *
      * @param customConfigs - configs to be set.
      */
@@ -141,6 +145,7 @@ public class ParameterManagerConfigurationProperties {
     }
 
     /**
+     * Specifies the parameters to be loaded as property sources.
      *
      * @return Set of parameters to be loaded as property sources.
      */
@@ -149,6 +154,7 @@ public class ParameterManagerConfigurationProperties {
     }
 
     /**
+     * Sets the parameters to be loaded as property sources.
      *
      * @param keys - keys to be set.
      */
