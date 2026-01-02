@@ -200,9 +200,8 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         int idx = trimmed.lastIndexOf('/');
 
         if (idx < 0) {
-            throw new ConfigurationException(
-                "Invalid parameter format. Expected 'parameter_name/parameter_version' but got: " +
-                    raw);
+            throw new ConfigurationException("Invalid parameter format. The expected format is " +
+                "'<parameter_name>/<parameter_version>', but the value was: " + raw);
         }
 
         String name = trimmed.substring(0, idx);
