@@ -16,7 +16,8 @@
 package io.micronaut.gcp.parametermanager.client;
 
 /**
- * A common wrapper class around {@link com.google.cloud.parametermanager.v1.RenderParameterVersionResponse}
+ * A common wrapper class around
+ * {@link com.google.cloud.parametermanager.v1.RenderParameterVersionResponse}
  * and {@link com.google.cloud.parametermanager.v1.ParameterVersion} with parameter information.
  *
  * @author Alfatah Bheda
@@ -39,7 +40,8 @@ public class VersionedParameter {
      * @param version   - The version of the parameter.
      * @param contents  - The content of the specific parameter version.
      */
-    public VersionedParameter(String projectId, String location, String name, String version, byte[] contents) {
+    public VersionedParameter(String projectId, String location, String name, String version,
+                              byte[] contents) {
         this.projectId = projectId;
         this.location = location;
         this.name = name;

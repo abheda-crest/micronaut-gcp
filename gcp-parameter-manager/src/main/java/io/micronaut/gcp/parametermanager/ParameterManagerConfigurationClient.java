@@ -40,14 +40,16 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Distributed configuration client implementation that fetches application configuration files from Google Cloud Parameter Manager.
+ * Distributed configuration client implementation that fetches application configuration files
+ * from Google Cloud Parameter Manager.
  *
  * @author Alfatah Bheda
  * @since 6.0.0
  */
 @Singleton
 @BootstrapContextCompatible
-@Requires(property = ConfigurationClient.ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.FALSE)
+@Requires(property = ConfigurationClient.ENABLED, value = StringUtils.TRUE,
+    defaultValue = StringUtils.FALSE)
 public class ParameterManagerConfigurationClient implements ConfigurationClient {
 
     private static final String CAMEL_CASE_REGEX = "([a-z])([A-Z]+)";
@@ -61,10 +63,15 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     /**
      * Constructor for the {@link ParameterManagerConfigurationClient}.
      *
-     * @param parameterManagerAccessClient            - The wrapper client {@link ParameterManagerAccessClient} to communicate with GCP Parameter Manager.
-     * @param parameterManagerConfigurationProperties - The Configuration for Parameter Manager client.
+     * @param parameterManagerAccessClient            - The wrapper client
+     *                                                {@link ParameterManagerAccessClient} to
+     *                                                communicate with GCP Parameter Manager.
+     * @param parameterManagerConfigurationProperties - The Configuration for Parameter Manager
+     *                                                client.
      */
-    public ParameterManagerConfigurationClient(ParameterManagerAccessClient parameterManagerAccessClient, ParameterManagerConfigurationProperties parameterManagerConfigurationProperties) {
+    public ParameterManagerConfigurationClient(
+        ParameterManagerAccessClient parameterManagerAccessClient,
+        ParameterManagerConfigurationProperties parameterManagerConfigurationProperties) {
         this.parameterManagerAccessClient = parameterManagerAccessClient;
         this.parameterManagerConfigurationProperties = parameterManagerConfigurationProperties;
     }
@@ -92,23 +99,25 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     }
 
     /**
-     * Resolves configurations from Parameter Manager into a reactive stream of {@link PropertySource}.
+     * Resolves configurations from Parameter Manager into a reactive stream of
+     * {@link PropertySource}.
      *
      * @return Flux of property sources.
      */
     private Publisher<PropertySource> resolveParameterConfigs() {
-        return Flux.fromIterable(configCandidates().entrySet())
-            .flatMap(env -> {
-                    ParsedParameter parsedParameter = parseNameAndVersion(env.getValue());
-                    return Mono.from(parameterManagerAccessClient.getRenderedParameter(parsedParameter.name, parsedParameter.version))
-                        .mapNotNull(parameter -> fromParameter(parameter, env.getKey()));
-                }
-            );
+        return Flux.fromIterable(configCandidates().entrySet()).flatMap(env -> {
+            ParsedParameter parsedParameter = parseNameAndVersion(env.getValue());
+            return Mono.from(parameterManagerAccessClient.getRenderedParameter(parsedParameter.name,
+                    parsedParameter.version))
+                .mapNotNull(parameter -> fromParameter(parameter, env.getKey()));
+        });
     }
 
     /**
-     * Resolves the keys from Parameter Manager into a single "parameter-manager-keys" PropertySource.
-     * Keys are all converted to snake case prior to insertion to allow the following mapping to happen:
+     * Resolves the keys from Parameter Manager into a single "parameter-manager-keys"
+     * PropertySource.
+     * Keys are all converted to snake case prior to insertion to allow the following mapping to
+     * happen:
      * DB_PASSWORD -> db.password
      * dbPassword -> (DB_PASSWORD) -> db.password
      *
@@ -118,12 +127,16 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
         return Flux.fromIterable(parameterManagerConfigurationProperties.getKeys())
             .flatMap(parameter -> {
                 ParsedParameter parsedParameter = parseNameAndVersion(parameter);
-                return parameterManagerAccessClient.getRenderedParameter(parsedParameter.name, parsedParameter.version);
-            })
-            .filter(Objects::nonNull)
-            .collectMap(versionedParameter -> "pm." + versionedParameter.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE).toUpperCase(),
-                versionedParameter -> (Object) new String(versionedParameter.getContents(), StandardCharsets.UTF_8).replaceAll("\\n", "").trim())
-            .map(m -> PropertySource.of("parameter-manager-keys", m, PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE, PropertySource.Origin.of("GCP Parameter Manager")));
+                return parameterManagerAccessClient.getRenderedParameter(parsedParameter.name,
+                    parsedParameter.version);
+            }).filter(Objects::nonNull).collectMap(versionedParameter -> "pm." +
+                    versionedParameter.getName().replaceAll(CAMEL_CASE_REGEX, CAMEL_CASE_REPLACE)
+                        .toUpperCase(),
+                versionedParameter -> (Object) new String(versionedParameter.getContents(),
+                    StandardCharsets.UTF_8).replaceAll("\\n", "").trim()).map(
+                m -> PropertySource.of("parameter-manager-keys", m,
+                    PropertySource.PropertyConvention.ENVIRONMENT_VARIABLE,
+                    PropertySource.Origin.of("GCP Parameter Manager")));
     }
 
     /**
@@ -143,10 +156,12 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
 
     /**
      * Converts a {@link VersionedParameter} into a Micronaut {@link PropertySource}.
-     * This method loops through the provided readers, and the first that can read the file (when a wrong file type is read an exception is swallowed)
-     * returns a Property Source based on the Map of the parsed file.
+     * This method loops through the provided readers, and the first that can read the file (when
+     * a wrong file type is read an exception is swallowed) returns a Property Source based on
+     * the Map of the parsed file.
      *
-     * @param parameter - The {@link VersionedParameter} fetched from GCP Parameter Manager to be parsed.
+     * @param parameter - The {@link VersionedParameter} fetched from GCP Parameter Manager to be
+     *                  parsed.
      * @param priority  - The priority to assign to the resulting {@link PropertySource}
      * @return Mapped PropertySource.
      */
@@ -166,7 +181,8 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
     }
 
     /**
-     * Parses a parameter string in the form "parameter_name/parameter_version" into a {@link ParsedParameter} object.
+     * Parses a parameter string in the form "parameter_name/parameter_version" into a
+     * {@link ParsedParameter} object.
      * Examples:
      * "my-param/1"    -> name="my-param", version="1"
      * "my-param/ver1" -> name="my-param", version="ver1"
@@ -185,8 +201,8 @@ public class ParameterManagerConfigurationClient implements ConfigurationClient 
 
         if (idx < 0) {
             throw new ConfigurationException(
-                "Invalid parameter format. Expected 'parameter_name/parameter_version' but got: " + raw
-            );
+                "Invalid parameter format. Expected 'parameter_name/parameter_version' but got: " +
+                    raw);
         }
 
         String name = trimmed.substring(0, idx);

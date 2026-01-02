@@ -105,10 +105,13 @@ public class ParameterManagerConfigurationProperties {
     private Set<String> keys = new HashSet<>();
 
     /**
-     * Specifies the location of the regional parameters used to create a {@link com.google.cloud.parametermanager.v1.ParameterManagerClient} specific to the location endpoint.
+     * Specifies the location of the regional parameters used to create a
+     * {@link com.google.cloud.parametermanager.v1.ParameterManagerClient} specific to the
+     * location endpoint.
      * If not provided, the client will be created using the global endpoint.
      * It must be one of the available location for the regional endpoints.
-     * See <a href="https://docs.cloud.google.com/secret-manager/docs/locations#parameter_manager_locations">Parameter Manager locations</a> for more information.
+     * See
+     * <a href="https://docs.cloud.google.com/secret-manager/docs/locations#parameter_manager_locations">Parameter Manager locations</a> for more information.
      *
      * @return Location of the regional parameters.
      */

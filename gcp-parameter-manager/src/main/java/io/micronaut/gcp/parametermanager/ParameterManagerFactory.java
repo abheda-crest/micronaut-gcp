@@ -55,7 +55,8 @@ public class ParameterManagerFactory {
      * @param configurationProperties Parameter Manager Configuration Properties
      */
     @Inject
-    public ParameterManagerFactory(ParameterManagerConfigurationProperties configurationProperties) {
+    public ParameterManagerFactory(
+        ParameterManagerConfigurationProperties configurationProperties) {
         this.configurationProperties = configurationProperties;
     }
 
@@ -67,13 +68,18 @@ public class ParameterManagerFactory {
      * @return an instance using defaults.
      */
     @Singleton
-    public ParameterManagerClient parameterManagerClient(@Named(Modules.PARAMETER_MANAGER) CredentialsProvider credentialsProvider, @Named(Modules.PARAMETER_MANAGER) TransportChannelProvider transportChannelProvider) {
+    public ParameterManagerClient parameterManagerClient(
+        @Named(Modules.PARAMETER_MANAGER) CredentialsProvider credentialsProvider,
+        @Named(Modules.PARAMETER_MANAGER) TransportChannelProvider transportChannelProvider) {
         try {
             ParameterManagerSettings.Builder builder = ParameterManagerSettings.newBuilder();
-            if (configurationProperties != null && StringUtils.isNotEmpty(configurationProperties.getLocation())) {
-                builder.setEndpoint(String.format(REGIONAL_ENDPOINT, configurationProperties.getLocation()));
+            if (configurationProperties != null &&
+                StringUtils.isNotEmpty(configurationProperties.getLocation())) {
+                builder.setEndpoint(
+                    String.format(REGIONAL_ENDPOINT, configurationProperties.getLocation()));
             }
-            ParameterManagerSettings settings = builder.setCredentialsProvider(credentialsProvider).setTransportChannelProvider(transportChannelProvider).build();
+            ParameterManagerSettings settings = builder.setCredentialsProvider(credentialsProvider)
+                .setTransportChannelProvider(transportChannelProvider).build();
 
             return ParameterManagerClient.create(settings);
         } catch (IOException e) {
@@ -82,14 +88,17 @@ public class ParameterManagerFactory {
     }
 
     /**
-     * Returns a default {@link CredentialsProvider}, allows users to override it and provide their own implementation.
+     * Returns a default {@link CredentialsProvider}, allows users to override it and provide
+     * their own implementation.
      *
-     * @param credentials default credentials, if not overridden by user should be provided by {@link io.micronaut.gcp.credentials.GoogleCredentialsFactory}
+     * @param credentials default credentials, if not overridden by user should be provided by
+     *                    {@link io.micronaut.gcp.credentials.GoogleCredentialsFactory}
      * @return A {@link FixedCredentialsProvider} holding the given credentials.
      */
     @Singleton
     @Named(Modules.PARAMETER_MANAGER)
-    public CredentialsProvider credentialsProvider(GoogleCredentials credentials) throws IOException {
+    public CredentialsProvider credentialsProvider(GoogleCredentials credentials)
+        throws IOException {
         return FixedCredentialsProvider.create(credentials);
     }
 
@@ -101,6 +110,7 @@ public class ParameterManagerFactory {
     @Singleton
     @Named(Modules.PARAMETER_MANAGER)
     public TransportChannelProvider transportChannelProvider() {
-        return InstantiatingGrpcChannelProvider.newBuilder().setHeaderProvider(new UserAgentHeaderProvider(Modules.PARAMETER_MANAGER)).build();
+        return InstantiatingGrpcChannelProvider.newBuilder()
+            .setHeaderProvider(new UserAgentHeaderProvider(Modules.PARAMETER_MANAGER)).build();
     }
 }

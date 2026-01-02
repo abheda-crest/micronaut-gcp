@@ -19,7 +19,9 @@ import io.micronaut.core.async.annotation.SingleResult;
 import org.reactivestreams.Publisher;
 
 /**
- * This interface is intended to abstract interactions with {@link com.google.cloud.parametermanager.v1.ParameterManagerClient}, and instead of returning Google's {@link com.google.api.core.ApiFuture}
+ * This interface is intended to abstract interactions with
+ * {@link com.google.cloud.parametermanager.v1.ParameterManagerClient}, and instead of returning
+ * Google's {@link com.google.api.core.ApiFuture}
  * transform it on reactive extensions.
  *
  * @author Alfatah Bheda
@@ -46,7 +48,8 @@ public interface ParameterManagerAccessClient {
      * @return String value of the parameter or empty
      */
     @SingleResult
-    Publisher<VersionedParameter> getParameter(String parameterName, String version, String projectId);
+    Publisher<VersionedParameter> getParameter(String parameterName, String version,
+                                               String projectId);
 
     /**
      * Renders a parameter from the Parameter Manager using the `gcp.projectId` project.
@@ -67,5 +70,6 @@ public interface ParameterManagerAccessClient {
      * @return String value of the parameter or empty
      */
     @SingleResult
-    Publisher<VersionedParameter> getRenderedParameter(String parameterName, String version, String projectId);
+    Publisher<VersionedParameter> getRenderedParameter(String parameterName, String version,
+                                                       String projectId);
 }
