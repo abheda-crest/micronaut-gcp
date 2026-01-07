@@ -105,6 +105,13 @@ public class DefaultParameterManagerAccessClient implements ParameterManagerAcce
             future.addListener(() -> {
                 try {
                     final ParameterVersion result = future.get();
+
+                    // Check for disabled Parameter Version to raise exception
+                    if (result.getDisabled()) {
+                        sink.error(new IllegalStateException("Parameter version is disabled"));
+                        return;
+                    }
+
                     sink.success(result);
                 } catch (Throwable e) {
                     sink.error(e);
