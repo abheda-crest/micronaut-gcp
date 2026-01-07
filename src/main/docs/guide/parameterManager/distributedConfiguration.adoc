@@ -1,0 +1,106 @@
+You can leverage https://docs.micronaut.io/latest/guide/index.html#distributedConfiguration[Distributed Configuration] and rely on Google Cloud Parameter Manager to store your configuration files.
+
+To enable it, add a bootstrap configuration file to `src/main/resources/`:
+
+.bootstrap configuration
+[configuration]
+----
+micronaut:
+    application:
+        name: sample-app
+    config-client:
+        enabled: true
+----
+
+IMPORTANT: Make sure you have configured the correct credentials on your project following the <<setup, Setting up GCP>> section.
+And that the service account you designated your application has proper rights to read parameters. Follow the official link:https://docs.cloud.google.com/secret-manager/parameter-manager/docs/access-control[Access Control] guide for Parameter Manager if you need more information.
+
+Similarly, you can leverage Distributed Configuration by complying with data residency regulations using regional parameters in Google Cloud Parameter Manager.
+Follow the official link:https://docs.cloud.google.com/secret-manager/docs/locations#parameter_manager_locations[Parameter Manager regional endpoint locations] if you need more information.
+
+To enable it for regional parameters, add the following bootstrap configuration file to `src/main/resources/`:
+
+.bootstrap configuration
+[configuration]
+----
+micronaut:
+    application:
+        name: sample-app
+    config-client:
+        enabled: true
+gcp:
+    parameter-manager:
+        location: us-east1
+----
+
+IMPORTANT: Make sure you have configured the `gcp.parameter-manager.location` property to use regional parameters for the distributed configuration
+
+
+== Configuration file resolution
+
+Internally the framework will try to read the files (that lack extensions) on the following order: `yaml`, `json`, `properties`.
+The first PropertySourceLoader that succeeds reading the contents of the parameters interrupts the chain.
+
+The framework leverages the https://docs.cloud.google.com/secret-manager/parameter-manager/docs/render-parameter-version[render functionality] to read the parameter such that the parameter versions can contain references to secrets created in Secret Manager.
+When you are trying to read the parameter containing the secret reference, make sure that the Secret Manager Secret Accessor role is granted to that specific parameter.
+Follow the official https://docs.cloud.google.com/secret-manager/parameter-manager/docs/reference-secrets-in-parameter[Reference Secrets in Parameter] guide for more details.
+
+=== Loading custom config files
+
+It may be desired to sometimes load a parameter as a PropertySource.
+You can `whitelist` parameters that you would like to load as PropertySources using the following configuration along with their respective version:
+
+.bootstrap configuration
+[configuration]
+----
+micronaut:
+    application:
+        name: sample-app
+    config-client:
+        enabled: true
+gcp:
+    parameter-manager:
+      custom-configs:
+        - my-first-config/v1
+        - my-second-config/v1
+----
+
+TIP: The parameters you list on `custom-configs` must be valid configuration files and not single keys.
+
+=== Loading key/value pairs into a PropertySource
+
+Google Cloud Parameter Manager can also host single keys mapping to a single String value.
+For instance one could have a `DB_PASSWORD` parameter, instead of storing it on a configuration file.
+Because Parameter Manager does not offer a hierarchical approach, loading all parameters in a project is not a viable solution.
+Instead you need to whitelist the keys you would like to pre-fetch such as the following config demonstrates:
+
+.bootstrap configuration
+[configuration]
+----
+micronaut:
+    application:
+        name: sample-app
+    config-client:
+        enabled: true
+gcp:
+    parameter-manager:
+      keys:
+        - DB_PASSWORD/newVersion
+        - dbUser/otherVersion
+----
+
+The framework will load all Parameter Manager keys and prefix them with a `pm` key. The table below shows how entries could be accessed:
+
+|===
+|Parameter Name with version|Micronaut resolved property
+|`DB_PASSWORD/newVersion`
+|`{pm.db.password}`
+|`dbUser/otherVersion`
+|`{pm.db.user}`
+|===
+
+== Parameter Versioning
+
+Google Cloud Parameter Manager supports link:https://docs.cloud.google.com/secret-manager/parameter-manager/docs/list-parameter-versions[parameter versioning].
+For the distributed configuration use case, we have to explicitly provide the parameter name along with its version in the format `<parameter-name>/<parameter-version>` e.g. `testParameter/v1`.
+Micronaut will load the particular parameter version of each parameter into a property source file.
