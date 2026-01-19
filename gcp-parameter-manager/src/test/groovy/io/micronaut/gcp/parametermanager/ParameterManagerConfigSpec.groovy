@@ -17,7 +17,7 @@ class ParameterManagerConfigSpec extends Specification {
                                                                  "gcp.projectId"                          : "first-gcp-project",
                                                                  "gcp.parameter-manager.custom-configs[0]": "microParam/v1"])
         expect:
-            context.containsProperties("custom.value")
+            "foo" == context.getRequiredProperty("custom.value", String)
         cleanup:
             context.stop()
     }

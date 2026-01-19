@@ -27,8 +27,7 @@ class SettableUnaryCallableRender extends UnaryCallable<RenderParameterVersionRe
                 contents = LocalFileResourceLoader.loadParameter(parameterVersionName.getProject(), parameterVersionName.getParameter(), parameterVersionName.getParameterVersion())
             }
             result.set(RenderParameterVersionResponse.newBuilder()
-                    .setPayload(ParameterVersionPayload.newBuilder().setData(ByteString.copyFrom(contents.getBytes())).build())
-                    .build())
+                    .setRenderedPayload(ByteString.copyFrom(contents.getBytes())).build())
         } catch (Exception e) {
             result.setException(new IllegalStateException("Could not find parameter"))
         }
