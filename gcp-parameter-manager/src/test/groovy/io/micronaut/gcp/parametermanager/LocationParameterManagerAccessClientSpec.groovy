@@ -29,9 +29,9 @@ class LocationParameterManagerAccessClientSpec extends Specification {
         ApplicationContext context = ApplicationContext.run(["spec.name": "ParameterManagerAccessClientSpec", "gcp.projectId": "first-gcp-project", "gcp.parameter-manager.location": "us-east1"])
         def client = context.getBean(ParameterManagerAccessClient)
         when:
-            def result = Mono.from(client.getParameter("regionalParam", "v1", "first-gcp-project")).block()
+            def result = Mono.from(client.getParameter("microParam", "v1", "first-gcp-project")).block()
         then:
-            result.getName() == "regionalParam"
+            result.getName() == "microParam"
             result.getContents() != null
     }
 
@@ -39,9 +39,9 @@ class LocationParameterManagerAccessClientSpec extends Specification {
         ApplicationContext context = ApplicationContext.run(["spec.name": "ParameterManagerAccessClientSpec", "gcp.projectId": "first-gcp-project", "gcp.parameter-manager.location": "us-east1"])
         def client = context.getBean(ParameterManagerAccessClient)
         when:
-            def result = Mono.from(client.getRenderedParameter("regionalParam", "v1", "first-gcp-project")).block()
+            def result = Mono.from(client.getRenderedParameter("microParam", "v1", "first-gcp-project")).block()
         then:
-            result.getName() == "regionalParam"
+            result.getName() == "microParam"
             result.getContents() != null
     }
 }

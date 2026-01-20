@@ -7,15 +7,16 @@ import spock.lang.Specification
 import spock.util.environment.RestoreSystemProperties
 
 @RestoreSystemProperties
-class ParameterManagerConfigSpec extends Specification {
+class LocationParameterManagerConfigSpec extends Specification {
 
-    void "load first project"() {
+    void "load first project for regional parameter"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         ApplicationContext context = ApplicationContext.run(["spec.name"                      : "ParameterManagerConfigSpec",
                                                              "micronaut.application.name"     : "parameter-manager-test",
                                                              "micronaut.config-client.enabled": true,
-                                                             "gcp.projectId"                  : "first-gcp-project"])
+                                                             "gcp.projectId"                  : "first-gcp-project",
+                                                             "gcp.parameter-manager.location" : "us-east1"])
         expect:
         !context.containsProperties("custom.value")
         !context.containsProperties("acme.customer.tier")
@@ -28,97 +29,120 @@ class ParameterManagerConfigSpec extends Specification {
         context.stop()
     }
 
-    void "load first project with custom config"() {
+    void "load first project for regional parameter with custom config"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         ApplicationContext context = ApplicationContext.run(["spec.name"                              : "ParameterManagerConfigSpec",
                                                              "micronaut.application.name"             : "parameter-manager-test",
                                                              "micronaut.config-client.enabled"        : true,
                                                              "gcp.projectId"                          : "first-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-east1",
                                                              "gcp.parameter-manager.custom-configs[0]": "microParam/v1"])
         expect:
-        "foo" == context.getRequiredProperty("custom.value", String)
-        "gold" == context.getRequiredProperty("acme.customer.tier", String)
+        "foo-regional" == context.getRequiredProperty("custom.value", String)
+        "silver" == context.getRequiredProperty("acme.customer.tier", String)
         cleanup:
         context.stop()
     }
 
-    void "load first project with multiple custom config"() {
+    void "load first project for regional parameter with multiple custom config"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         ApplicationContext context = ApplicationContext.run(["spec.name"                              : "ParameterManagerConfigSpec",
                                                              "micronaut.application.name"             : "parameter-manager-test",
                                                              "micronaut.config-client.enabled"        : true,
                                                              "gcp.projectId"                          : "first-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-east1",
                                                              "gcp.parameter-manager.custom-configs[0]": "microParam/v1",
                                                              "gcp.parameter-manager.custom-configs[1]": "otherParam/v2"])
         expect:
-        "foo" == context.getRequiredProperty("custom.value", String)
-        "gold" == context.getRequiredProperty("acme.customer.tier", String)
-        "INFO" == context.getRequiredProperty("logging.level", String)
-        "logs/application.log" == context.getRequiredProperty("logging.file.name", String)
+        "foo-regional" == context.getRequiredProperty("custom.value", String)
+        "silver" == context.getRequiredProperty("acme.customer.tier", String)
+        "DEBUG" == context.getRequiredProperty("logging.level", String)
+        "resources/logs/application.log" == context.getRequiredProperty("logging.file.name", String)
         true == context.getRequiredProperty("logging.enabled", Boolean)
         cleanup:
         context.stop()
     }
 
-    void "load first project with keys"() {
+    void "load first project for regional parameter with keys"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         ApplicationContext context = ApplicationContext.run(["spec.name"                      : "ParameterManagerConfigSpec",
                                                              "micronaut.application.name"     : "parameter-manager-test",
                                                              "micronaut.config-client.enabled": true,
                                                              "gcp.projectId"                  : "first-gcp-project",
+                                                             "gcp.parameter-manager.location" : "us-east1",
                                                              "gcp.parameter-manager.keys[0]"  : "DB_PASSWORD/firstversion",
                                                              "gcp.parameter-manager.keys[1]"  : "dbUser/vers1"])
         expect:
-        "very-sensitive-password" == context.getRequiredProperty("pm.db.password", String)
-        "sqluser" == context.getRequiredProperty("pm.db.user", String)
+        "regional-sensitive-password" == context.getRequiredProperty("pm.db.password", String)
+        "regionalsqluser" == context.getRequiredProperty("pm.db.user", String)
         cleanup:
         context.stop()
     }
 
-    void "load first project with both custom config and keys"() {
+    void "load first project for regional parameter with both custom config and keys"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         ApplicationContext context = ApplicationContext.run(["spec.name"                              : "ParameterManagerConfigSpec",
                                                              "micronaut.application.name"             : "parameter-manager-test",
                                                              "micronaut.config-client.enabled"        : true,
                                                              "gcp.projectId"                          : "first-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-east1",
                                                              "gcp.parameter-manager.custom-configs[0]": "microParam/v1",
                                                              "gcp.parameter-manager.custom-configs[1]": "otherParam/v2",
                                                              "gcp.parameter-manager.keys[0]"          : "DB_PASSWORD/firstversion",
                                                              "gcp.parameter-manager.keys[1]"          : "dbUser/vers1"])
         expect:
-        "foo" == context.getRequiredProperty("custom.value", String)
-        "gold" == context.getRequiredProperty("acme.customer.tier", String)
-        "INFO" == context.getRequiredProperty("logging.level", String)
-        "logs/application.log" == context.getRequiredProperty("logging.file.name", String)
+        "foo-regional" == context.getRequiredProperty("custom.value", String)
+        "silver" == context.getRequiredProperty("acme.customer.tier", String)
+        "DEBUG" == context.getRequiredProperty("logging.level", String)
+        "resources/logs/application.log" == context.getRequiredProperty("logging.file.name", String)
         true == context.getRequiredProperty("logging.enabled", Boolean)
-        "very-sensitive-password" == context.getRequiredProperty("pm.db.password", String)
-        "sqluser" == context.getRequiredProperty("pm.db.user", String)
+        "regional-sensitive-password" == context.getRequiredProperty("pm.db.password", String)
+        "regionalsqluser" == context.getRequiredProperty("pm.db.user", String)
         cleanup:
         context.stop()
     }
 
-    void "load second project"() {
+    void "load first project for regional parameter in other location"() {
+        given:
+        System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
+        ApplicationContext context = ApplicationContext.run(["spec.name"                              : "ParameterManagerConfigSpec",
+                                                             "micronaut.application.name"             : "parameter-manager-test",
+                                                             "micronaut.config-client.enabled"        : true,
+                                                             "gcp.projectId"                          : "first-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-central1",
+                                                             "gcp.parameter-manager.custom-configs[0]": "microParam/v1",
+                                                             "gcp.parameter-manager.keys[0]"          : "dbUser/vers1"])
+        expect:
+        "foo-us-central" == context.getRequiredProperty("custom.value", String)
+        "copper" == context.getRequiredProperty("acme.customer.tier", String)
+        "postgres-user" == context.getRequiredProperty("pm.db.user", String)
+        cleanup:
+        context.stop()
+    }
+
+    void "load second project for regional parameter"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         ApplicationContext context = ApplicationContext.run(["spec.name"                              : "ParameterManagerConfigSpec",
                                                              "micronaut.application.name"             : "parameter-manager-test",
                                                              "micronaut.config-client.enabled"        : true,
                                                              "gcp.projectId"                          : "second-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-east1",
                                                              "gcp.parameter-manager.custom-configs[0]": "microSecondParam/v1",
                                                              "gcp.parameter-manager.keys[0]"          : "dbuser/vers1"])
         expect:
-        "second-foo" == context.getRequiredProperty("custom.value", String)
-        "golden" == context.getRequiredProperty("acme.customer.tier", String)
-        "secondsqluser" == context.getRequiredProperty("pm.dbuser", String)
+        "second-foo-regional" == context.getRequiredProperty("custom.value", String)
+        "bronze" == context.getRequiredProperty("acme.customer.tier", String)
+        "secondregionalsqluser" == context.getRequiredProperty("pm.dbuser", String)
         cleanup:
         context.stop()
     }
 
-    void "empty parameter reference"() {
+    void "empty regional parameter reference"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         when:
@@ -126,6 +150,7 @@ class ParameterManagerConfigSpec extends Specification {
                                                              "micronaut.application.name"             : "parameter-manager-test",
                                                              "micronaut.config-client.enabled"        : true,
                                                              "gcp.projectId"                          : "first-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-east1",
                                                              "gcp.parameter-manager.custom-configs[0]": ""])
         then:
         Exception ex = thrown(Exception)
@@ -133,7 +158,7 @@ class ParameterManagerConfigSpec extends Specification {
         "Parameter reference must not be empty" == ex.message
     }
 
-    void "invalid parameter reference without slash"() {
+    void "invalid regional parameter reference without slash"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         when:
@@ -141,6 +166,7 @@ class ParameterManagerConfigSpec extends Specification {
                                                              "micronaut.application.name"             : "parameter-manager-test",
                                                              "micronaut.config-client.enabled"        : true,
                                                              "gcp.projectId"                          : "first-gcp-project",
+                                                             "gcp.parameter-manager.location"         : "us-east1",
                                                              "gcp.parameter-manager.custom-configs[0]": "microParamv1"])
         then:
         Exception ex = thrown(Exception)
@@ -148,7 +174,7 @@ class ParameterManagerConfigSpec extends Specification {
         "Invalid parameter format. The expected format is '<parameter_name>/<parameter_version>', but the value was: microParamv1" == ex.message
     }
 
-    void "invalid parameter reference without parameter name"() {
+    void "invalid regional parameter reference without parameter name"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         when:
@@ -156,6 +182,7 @@ class ParameterManagerConfigSpec extends Specification {
                                                              "micronaut.application.name"     : "parameter-manager-test",
                                                              "micronaut.config-client.enabled": true,
                                                              "gcp.projectId"                  : "first-gcp-project",
+                                                             "gcp.parameter-manager.location" : "us-east1",
                                                              "gcp.parameter-manager.keys[0]"  : "/v1"])
         then:
         Exception ex = thrown(Exception)
@@ -163,7 +190,7 @@ class ParameterManagerConfigSpec extends Specification {
         "Parameter name must not be empty: /v1" == ex.message
     }
 
-    void "invalid parameter reference without parameter version"() {
+    void "invalid regional parameter reference without parameter version"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         when:
@@ -171,6 +198,7 @@ class ParameterManagerConfigSpec extends Specification {
                                                              "micronaut.application.name"     : "parameter-manager-test",
                                                              "micronaut.config-client.enabled": true,
                                                              "gcp.projectId"                  : "first-gcp-project",
+                                                             "gcp.parameter-manager.location" : "us-east1",
                                                              "gcp.parameter-manager.keys[0]"  : "microParam/"])
         then:
         Exception ex = thrown(Exception)
@@ -178,7 +206,7 @@ class ParameterManagerConfigSpec extends Specification {
         "Parameter version must not be empty: microParam/" == ex.message
     }
 
-    void "invalid parameter reference with multiple slashes"() {
+    void "invalid regional parameter reference with multiple slashes"() {
         given:
         System.setProperty(Environment.BOOTSTRAP_CONTEXT_PROPERTY, "true")
         when:
@@ -186,6 +214,7 @@ class ParameterManagerConfigSpec extends Specification {
                                                              "micronaut.application.name"     : "parameter-manager-test",
                                                              "micronaut.config-client.enabled": true,
                                                              "gcp.projectId"                  : "first-gcp-project",
+                                                             "gcp.parameter-manager.location" : "us-east1",
                                                              "gcp.parameter-manager.keys[0]"  : "microParam/some/v1"])
         then:
         Exception ex = thrown(Exception)

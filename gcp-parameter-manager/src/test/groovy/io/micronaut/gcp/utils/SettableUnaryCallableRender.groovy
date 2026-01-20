@@ -5,7 +5,6 @@ import com.google.api.core.SettableApiFuture
 import com.google.api.gax.rpc.ApiCallContext
 import com.google.api.gax.rpc.UnaryCallable
 import com.google.cloud.parametermanager.v1.ParameterVersionName
-import com.google.cloud.parametermanager.v1.ParameterVersionPayload
 import com.google.cloud.parametermanager.v1.RenderParameterVersionRequest
 import com.google.cloud.parametermanager.v1.RenderParameterVersionResponse
 import com.google.protobuf.ByteString

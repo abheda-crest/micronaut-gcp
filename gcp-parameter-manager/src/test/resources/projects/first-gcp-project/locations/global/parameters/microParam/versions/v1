@@ -1,2 +1,5 @@
 custom:
-  value: "foo"
+  value: foo
+acme:
+  customer:
+    tier: gold
